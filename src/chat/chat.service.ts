@@ -18,4 +18,9 @@ export class ChatService {
         const messages = await this.messageModel.find({ room }).exec();
         return this.messageModel.find({ room }).exec();
     }
+
+    // delete all messages from a room
+    async deleteMessages(room: string): Promise<void> {
+        await this.messageModel.deleteMany({ room: String(room) }).exec();
+    }
 }

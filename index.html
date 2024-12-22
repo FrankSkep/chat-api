@@ -13,6 +13,7 @@
   <div id="messages"></div>
   <input type="text" id="message" placeholder="Write your name..." />
   <button id="sendMessage">Send</button>
+  <button id="deleteMessages">Delete Messages</button>
   <div id="typing"></div>
 
   <script>
@@ -67,14 +68,23 @@
         typingDiv.innerText = typingMessage;
     });
 
+    socket.on('deleteMessages', () => {
+        const messagesDiv = document.getElementById('messages');
+        messagesDiv.innerHTML = '';
+    });
+
     document.getElementById('sendMessage').onclick = () => {
         const message = document.getElementById('message').value;
         if (username.trim() !== '') {
-          socket.emit('message', { room, content: message, sender: username });
+          socket.emit('message', { sender: username, content: message, room });
           document.getElementById('message').value = '';
         } else {
           alert('Please enter a username.');
         }
+    };
+
+    document.getElementById('deleteMessages').onclick = () => {
+        socket.emit('deleteMessages', room);
     };
 
     document.getElementById('message').oninput = () => {

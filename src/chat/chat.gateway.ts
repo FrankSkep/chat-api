@@ -45,7 +45,7 @@ export class ChatGateway
     }
 
     @SubscribeMessage('message')
-    async handleMessage(@MessageBody() { room, content, sender }: { room: string, content: string, sender: string }, @ConnectedSocket() client: Socket): Promise<void> {
+    async handleMessage(@MessageBody() { sender, content, room }: { room: string, content: string, sender: string }, @ConnectedSocket() client: Socket): Promise<void> {
         await this.chatService.addMessage(sender, content, room);
         this.server.to(room).emit('message', { content, sender });
     }
@@ -53,5 +53,11 @@ export class ChatGateway
     @SubscribeMessage('typing')
     handleTyping(@MessageBody() { room, username }: { room: string, username: string }, @ConnectedSocket() client: Socket) {
         client.to(room).emit('typing', `${username} is typing...`);
+    }
+
+    @SubscribeMessage('deleteMessages')
+    async handleDeleteMessages(@MessageBody() room: string, @ConnectedSocket() client: Socket): Promise<void> {
+        await this.chatService.deleteMessages(room);
+        client.to(room).emit('notification', 'All messages have been deleted');
     }
 }
