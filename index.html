@@ -26,7 +26,7 @@
     // send a message
     document.getElementById('sendMessage').onclick = () => {
       const message = document.getElementById('message').value;
-      socket.emit('message', message);
+      socket.emit('message', { content : message });
       document.getElementById('message').value = ''; // clear the input
     };
   </script>

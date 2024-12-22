@@ -8,12 +8,16 @@ import {
     ConnectedSocket,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
+import { ChatService } from './chat.service';
+import { CreateMessageDto } from './dto/create-message.dto';
 
 @WebSocketGateway(3033, { cors: { origin: '*' } })
 export class ChatGateway
     implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
     private server: Server;
+
+    constructor(private readonly chatService: ChatService) {}
 
     afterInit(server: Server) {
         this.server = server;
@@ -28,12 +32,10 @@ export class ChatGateway
     }
 
     @SubscribeMessage('message')
-    handleMessage(
-        @MessageBody() message: string,
-        @ConnectedSocket() client: Socket,
-    ): string {
-        console.log(`message: ${message}`);
-        this.server.emit('message', message);
-        return message;
+    async handleMessage(@MessageBody() createMessageDto: CreateMessageDto, @ConnectedSocket() client: Socket,): Promise<String> {
+        console.log(`message: ${createMessageDto.content} from ${client.id}`);
+        await this.chatService.addMessage(createMessageDto.content);
+        this.server.emit('message', createMessageDto.content);
+        return createMessageDto.content;
     }
 }
