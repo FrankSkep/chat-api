@@ -68,6 +68,16 @@ export class ChatGateway
     @SubscribeMessage('typing')
     handleTyping(@MessageBody() { room, username }: { room: string, username: string }, @ConnectedSocket() client: Socket) {
         client.to(room).emit('typing', `${username} is typing...`);
+    
+        // Clear previous timeout if exists
+        if (client.typingTimeout) {
+            clearTimeout(client.typingTimeout);
+        }
+
+        // Set a timeout to clear the typing message after 3 seconds of inactivity
+        client.typingTimeout = setTimeout(() => {
+            client.to(room).emit('typing', '');
+        }, 2200);
     }
 
     @SubscribeMessage('deleteMessages')
