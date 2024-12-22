@@ -7,12 +7,15 @@ import { Message } from '../schemas/message.schema';
 export class ChatService {
     constructor(@InjectModel(Message.name) private messageModel: Model<Message>){}
 
-    async addMessage(content: string) : Promise<Message> {
-        const message = new this.messageModel({ content });
+    // save message to the database
+    async addMessage(sender: string, content: string, room : string): Promise<Message> {
+        const message = new this.messageModel({ sender, content, room });
         return message.save();
     }
-
-    async getMessages() : Promise<Message[]> {
-        return this.messageModel.find().exec();
+    
+    // get all messages from a room
+    async getMessages(room: string): Promise<Message[]> {
+        const messages = await this.messageModel.find({ room }).exec();
+        return this.messageModel.find({ room }).exec();
     }
 }
