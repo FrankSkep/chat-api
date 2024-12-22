@@ -8,26 +8,79 @@
 </head>
 <body>
   <h1>Chat App</h1>
+  <input type="text" id="username" placeholder="Write your name..." />
+  <button id="joinChat">OK</button>
   <div id="messages"></div>
-  <input type="text" id="message" placeholder="Escribe un mensaje..." />
+  <input type="text" id="message" placeholder="Write your name..." />
   <button id="sendMessage">Send</button>
+  <div id="typing"></div>
 
   <script>
-    const socket = io('http://localhost:3033'); // connect to the server
+    const socket = io('http://localhost:3033');
+    const room = 'general';
 
-    // listen for messages 
-    socket.on('message', (message) => {
-      const messagesDiv = document.getElementById('messages');
-      const newMessage = document.createElement('div');
-      newMessage.innerText = message;
-      messagesDiv.appendChild(newMessage);
+    const usernameInput = document.getElementById('username');
+    const joinChatButton = document.getElementById('joinChat');
+    let username = '';
+
+    function joinRoom(username) {
+      socket.emit('joinRoom', { room, username });
+    }
+
+    joinChatButton.addEventListener('click', () => {
+      username = usernameInput.value;
+      if (username.trim() !== '') {
+        joinRoom(username);
+        joinChatButton.disabled = true;
+        usernameInput.disabled = true;
+      } else {
+        alert('Please enter a username.');
+      }
     });
 
-    // send a message
+    socket.on('messageHistory', (messages) => {
+        const messagesDiv = document.getElementById('messages');
+        messagesDiv.innerHTML = ''; // Clear previous messages
+        messages.forEach(message => {
+            const newMessage = document.createElement('div');
+            newMessage.innerText = `${message.sender}: ${message.content}`;
+            messagesDiv.appendChild(newMessage);
+        });
+    });
+
+    socket.on('message', (message) => {
+        const messagesDiv = document.getElementById('messages');
+        const newMessage = document.createElement('div');
+        newMessage.innerText = `${message.sender}: ${message.content}`;
+        messagesDiv.appendChild(newMessage);
+    });
+
+    socket.on('notification', (notification) => {
+        const messagesDiv = document.getElementById('messages');
+        const newNotification = document.createElement('div');
+        newNotification.innerText = notification;
+        messagesDiv.appendChild(newNotification);
+    });
+
+    socket.on('typing', (typingMessage) => {
+        const typingDiv = document.getElementById('typing');
+        typingDiv.innerText = typingMessage;
+    });
+
     document.getElementById('sendMessage').onclick = () => {
-      const message = document.getElementById('message').value;
-      socket.emit('message', { content : message });
-      document.getElementById('message').value = ''; // clear the input
+        const message = document.getElementById('message').value;
+        if (username.trim() !== '') {
+          socket.emit('message', { room, content: message, sender: username });
+          document.getElementById('message').value = '';
+        } else {
+          alert('Please enter a username.');
+        }
+    };
+
+    document.getElementById('message').oninput = () => {
+        if (username.trim() !== '') {
+          socket.emit('typing', { room, username });
+        }
     };
   </script>
 </body>
