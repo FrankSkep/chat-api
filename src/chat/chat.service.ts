@@ -15,8 +15,7 @@ export class ChatService {
     
     // get all messages from a room
     async getMessages(room: string): Promise<Message[]> {
-        const messages = await this.messageModel.find({ room }).exec();
-        return this.messageModel.find({ room }).exec();
+        return this.messageModel.find({ room }).exec() || [];
     }
 
     // delete all messages from a room

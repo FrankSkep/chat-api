@@ -15,6 +15,7 @@ export class ChatGateway
     implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
     private server: Server;
+    private users: Map<string, string> = new Map();
 
     constructor(private readonly chatService: ChatService) {}
 
@@ -23,11 +24,24 @@ export class ChatGateway
     }
 
     handleConnection(client: Socket) {
-        this.server.emit('notification', `User ${client.id} connected`);
+        const username = client.handshake.query.username as string;
+        if (username) {
+            this.users.set(client.id, username);
+            this.server.emit('notification', `User ${username} connected`);
+        } else {
+            this.server.emit('notification', `User ${client.id} connected`);
+        }
     }
     
     handleDisconnect(client: Socket) {
-        this.server.emit('notification', `Usuario ${client.id} disconnected`);
+        const username = this.users.get(client.id) || `User ${client.id}`;
+        this.server.emit('notification', `${username} disconnected`);
+        this.users.delete(client.id);
+    }
+
+    @SubscribeMessage('setUsername')
+    handleSetUsername(@MessageBody() username: string, @ConnectedSocket() client: Socket) {
+        this.users.set(client.id, username);
     }
 
     @SubscribeMessage('joinRoom')
@@ -40,8 +54,9 @@ export class ChatGateway
 
     @SubscribeMessage('leaveRoom')
     handleLeaveRoom(@MessageBody() room: string, @ConnectedSocket() client: Socket) {
+        const username = this.users.get(client.id) || `User ${client.id}`;
         client.leave(room);
-        client.to(room).emit('notification', `${client.id} has left the room`);
+        client.to(room).emit('notification', `${username} has left the room`);
     }
 
     @SubscribeMessage('message')
