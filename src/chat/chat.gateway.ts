@@ -44,12 +44,23 @@ export class ChatGateway
         this.users.set(client.id, username);
     }
 
+    @SubscribeMessage('createRoom')
+    async handleCreateRoom(@MessageBody() { name, password }: { name: string, password?: string }, @ConnectedSocket() client: Socket) {
+        const room = await this.chatService.createRoom(name, password);
+        client.emit('roomCreated', room);
+    }
+
     @SubscribeMessage('joinRoom')
-    async handleJoinRoom(@MessageBody() { room, username }: { room: string, username: string }, @ConnectedSocket() client: Socket) {
-        client.join(room);
-        const messages = await this.chatService.getMessages(room);
-        client.emit('messageHistory', messages);
-        client.to(room).emit('notification', `${username} has joined room ${room}`);
+    async handleJoinRoom(@MessageBody() { room, username, password }: { room: string, username: string, password?: string }, @ConnectedSocket() client: Socket) {
+        const roomData = await this.chatService.findRoomByName(room);
+        if (roomData && (!roomData.password || roomData.password === password)) {
+            client.join(room);
+            const messages = await this.chatService.getMessages(room);
+            client.emit('messageHistory', messages);
+            client.to(room).emit('notification', `${username} has joined room ${room}`);
+        } else {
+            client.emit('notification', 'Incorrect room password');
+        }
     }
 
     @SubscribeMessage('leaveRoom')
