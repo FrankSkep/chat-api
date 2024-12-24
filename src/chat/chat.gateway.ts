@@ -81,8 +81,8 @@ export class ChatGateway
 
     @SubscribeMessage('message')
     async handleMessage(@MessageBody() { sender, content, room }: { room: string, content: string, sender: string }, @ConnectedSocket() client: Socket): Promise<void> {
-        await this.chatService.addMessage(sender, content, room);
-        this.server.to(room).emit('message', { content, sender });
+        const message = await this.chatService.addMessage(sender, content, room);
+        this.server.to(room).emit('message', { content, sender, createdAt: message.createdAt });
     }
 
     @SubscribeMessage('typing')
