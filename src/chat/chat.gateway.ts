@@ -63,6 +63,15 @@ export class ChatGateway
         }
     }
 
+    @SubscribeMessage('getRooms')
+    async handleGetRooms(@ConnectedSocket() client: Socket) {
+        const rooms = await this.chatService.getRooms();
+        client.emit('rooms', rooms.map(({ name, password }) => ({
+            name,
+            protected: !!password,
+        })));
+    }
+
     @SubscribeMessage('leaveRoom')
     handleLeaveRoom(@MessageBody() room: string, @ConnectedSocket() client: Socket) {
         const username = this.users.get(client.id) || `User ${client.id}`;
