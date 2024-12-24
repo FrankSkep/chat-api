@@ -27,15 +27,16 @@ export class ChatGateway
         const username = client.handshake.query.username as string;
         if (username) {
             this.users.set(client.id, username);
-            this.server.emit('notification', `User ${username} connected`);
+
+            this.server.emit('notification', { content: `${username} connected`, createdAt: Date.now() });
         } else {
-            this.server.emit('notification', `User ${client.id} connected`);
+            this.server.emit('notification', { content: `User ${client.id} connected`, createdAt: Date.now() });
         }
     }
     
     handleDisconnect(client: Socket) {
         const username = this.users.get(client.id) || `User ${client.id}`;
-        this.server.emit('notification', `${username} disconnected`);
+        this.server.emit('notification', { content: `${username} disconnected`, createdAt: Date.now()});
         this.users.delete(client.id);
     }
 
@@ -57,9 +58,9 @@ export class ChatGateway
             client.join(room);
             const messages = await this.chatService.getMessages(room);
             client.emit('messageHistory', messages);
-            client.to(room).emit('notification', `${username} has joined room ${room}`);
+            client.to(room).emit('notification', { content : `${username} has joined the room`, createdAt: Date.now() });
         } else {
-            client.emit('notification', 'Incorrect room password');
+            client.emit('notification', { content: 'Invalid password', createdAt: Date.now() });
         }
     }
 
@@ -76,7 +77,11 @@ export class ChatGateway
     handleLeaveRoom(@MessageBody() room: string, @ConnectedSocket() client: Socket) {
         const username = this.users.get(client.id) || `User ${client.id}`;
         client.leave(room);
-        client.to(room).emit('notification', `${username} has left the room`);
+        const notification = {
+            content: `${username} has left the room`,
+            createdAt: Date.now(),
+        };
+        client.to(room).emit('notification', notification);
     }
 
     @SubscribeMessage('message')
@@ -103,6 +108,6 @@ export class ChatGateway
     @SubscribeMessage('deleteMessages')
     async handleDeleteMessages(@MessageBody() room: string, @ConnectedSocket() client: Socket): Promise<void> {
         await this.chatService.deleteMessages(room);
-        client.to(room).emit('notification', 'All messages have been deleted');
+        client.to(room).emit('notification', { content: 'All messages have been deleted', createdAt: Date.now() });
     }
 }
