@@ -8,7 +8,7 @@ export class Message extends Document {
 
     @Prop({ required: true })
     content: string; // message content
-    
+
     @Prop({ required: true })
     room: string; // room name
 

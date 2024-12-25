@@ -4,13 +4,13 @@ import { Document } from 'mongoose';
 @Schema()
 export class Room extends Document {
     @Prop({ required: true })
-    name: string;
+    name: string; // room name
 
     @Prop()
-    password?: string;
+    password?: string; // room password
 
     @Prop({ default: Date.now })
-    createdAt: Date;
+    createdAt: Date; // room creation date
 }
 
 export const RoomSchema = SchemaFactory.createForClass(Room);

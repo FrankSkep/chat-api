@@ -37,8 +37,8 @@ export class ChatService {
         return room.save();
     }
 
-     // get all rooms
-     async getRooms(): Promise<Room[]> {
+    // get all rooms
+    async getRooms(): Promise<Room[]> {
         return this.roomModel.find().exec();
     }
 
