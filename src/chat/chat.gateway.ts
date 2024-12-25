@@ -84,13 +84,13 @@ export class ChatGateway
             client.join(room);
             const messages = await this.chatService.getMessages(room);
             client.emit('messageHistory', messages);
-            client
-                .to(room)
-                .emit('notification', {
-                    content: `${username} has joined the room`,
-                    createdAt: Date.now(),
-                });
+            client.emit('passwordStatus', true); // Send password status to the client
+            client.to(room).emit('notification', {
+                content: `${username} has joined the room`,
+                createdAt: Date.now(),
+            });
         } else {
+            client.emit('passwordStatus', false); // Send password status to the client
             client.emit('notification', {
                 content: 'Invalid password',
                 createdAt: Date.now(),
@@ -168,11 +168,9 @@ export class ChatGateway
         @ConnectedSocket() client: Socket,
     ): Promise<void> {
         await this.chatService.deleteMessages(room);
-        client
-            .to(room)
-            .emit('notification', {
-                content: 'All messages have been deleted',
-                createdAt: Date.now(),
-            });
+        client.to(room).emit('notification', {
+            content: 'All messages have been deleted',
+            createdAt: Date.now(),
+        });
     }
 }
