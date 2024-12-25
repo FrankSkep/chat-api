@@ -1,2 +1,2 @@
 *.ts linguist-language=TypeScript
-index.html linguist-vendored
+*.json linguist-vendored
