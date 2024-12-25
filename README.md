@@ -49,7 +49,7 @@ The frontend repository for this API can be found at [https://github.com/FrankSk
 
 ## Usage
 
-The application will be running on `http://localhost:3000`. You can use a WebSocket client to connect to the chat server on port `3033`.
+The application will be running on `http://localhost:3034`. You can use a WebSocket client to connect to the chat server on port `3033`.
 
 ## WebSocket Events
 

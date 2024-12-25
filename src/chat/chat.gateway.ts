@@ -77,7 +77,6 @@ export class ChatGateway
         @ConnectedSocket() client: Socket,
     ) {
         const roomData = await this.chatService.findRoomByName(room);
-        console.log(`roomData`, roomData);
         if (
             roomData &&
             (!roomData.password || roomData.password === password)
