@@ -1,6 +1,10 @@
-# Chat API
+# Real-Time Chat API
 
 This is a chat application built with NestJS, Mongoose, and Socket.IO. The application allows users to create rooms, send messages, and receive real-time updates.
+
+## Frontend Repository
+
+The frontend repository for this API can be found at [https://github.com/FrankSkep/live-chat-frontend](https://github.com/FrankSkep/live-chat-frontend). This frontend is built with SvelteKit and connects to this API to provide an interactive user interface for real-time chat.
 
 ## Table of Contents
 
