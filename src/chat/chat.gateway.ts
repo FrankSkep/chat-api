@@ -10,7 +10,7 @@ import {
 import { Socket, Server } from 'socket.io';
 import { ChatService } from './chat.service';
 
-@WebSocketGateway(3033, { namespace: `/socket.io`, cors: { origin: '*' } })
+@WebSocketGateway(3034, { namespace: `/socket.io`, cors: { origin: '*' } })
 export class ChatGateway
     implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
