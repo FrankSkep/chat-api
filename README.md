@@ -32,25 +32,20 @@ The frontend repository for this API can be found at [https://github.com/FrankSk
     cd live-chat-api
     ```
 
-2. Install dependencies:
-    ```sh
-    npm install
-    ```
-
-3. Create a `.env` file and add your MongoDB connection string and application PORT:
+2. Create a `.env` file and add your MongoDB connection string and application PORT:
     ```env
-    MONGODB_URI=mongodb://localhost:27017/nest
-    PORT=3034
+    MONGODB_URI=mongodb://mongo:27017/nest
+    PORT=3033
     ```
 
-4. Start the application:
+3. Build and start the containers using Docker Compose:
     ```sh
-    npm run start:dev
+    docker-compose up --build
     ```
 
 ## Usage
 
-The application will be running on `http://localhost:3034`. You can use a WebSocket client to connect to the chat server on port `3033`.
+The application will be running on `http://localhost:3033`. You can use a WebSocket client to connect to the chat server on port `3034`.
 
 ## WebSocket Events
 
