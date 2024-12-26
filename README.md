@@ -37,9 +37,10 @@ The frontend repository for this API can be found at [https://github.com/FrankSk
     npm install
     ```
 
-3. Create a `.env` file and add your MongoDB connection string:
+3. Create a `.env` file and add your MongoDB connection string and application PORT:
     ```env
     MONGODB_URI=mongodb://localhost:27017/nest
+    PORT=3034
     ```
 
 4. Start the application:

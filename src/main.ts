@@ -12,7 +12,7 @@ async function bootstrap() {
     });
 
     app.useWebSocketAdapter(new IoAdapter(app));
-    
-    await app.listen(3033);
-    }
+
+    await app.listen(process.env.PORT || 3033);
+}
 bootstrap();
